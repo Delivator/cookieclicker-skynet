@@ -2241,7 +2241,7 @@ Game.Launch=function()
 				}
 			}
 		}
-		Game.setSkynetSecret=function(secret)
+		Game.setSkynetSecret=async function(secret)
 		{
 			if (!secret) return;
 			Game.skynetSecret = secret;
