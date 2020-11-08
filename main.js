@@ -2011,7 +2011,7 @@ Game.Launch=function()
 		}
 		
 		Game.toSave=false;
-		Game.WriteSave=async function(type)
+		Game.WriteSave=function(type)
 		{
 			Game.toSave=false;
 			//type : none is default, 1=return string only, 2=return uncompressed string, 3=return uncompressed, commented string
@@ -2200,7 +2200,7 @@ Game.Launch=function()
 							const client = new Skynet.SkynetClient();
 							const { privateKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
 							try {
-								await client.db.setJSON(privateKey, "cookieclicker", { savecode: str });
+								client.db.setJSON(privateKey, "cookieclicker", { savecode: str });
 							} catch (error) {
 								console.log(error);
 							}
