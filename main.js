@@ -2200,7 +2200,11 @@ Game.Launch=function()
 							const client = new Skynet.SkynetClient();
 							const { privateKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
 							try {
-								client.db.setJSON(privateKey, "cookieclicker", { savecode: str });
+								client.db.setJSON(privateKey, "cookieclicker", { savecode: str })
+									.then(() => {
+										if (Game.prefs.popups) Game.Popup('Saved to skynet');
+										else Game.Notify('Saved to skynet','','',1,1);
+									});
 							} catch (error) {
 								console.log(error);
 							}
