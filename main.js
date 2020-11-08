@@ -2195,6 +2195,15 @@ Game.Launch=function()
 					{
 						str=escape(str);
 						Game.localStorageSet(Game.SaveTo,str);//aaand save
+						if (Game.skynetSecret) {
+							const client = new Skynet.SkynetClient();
+							const { privateKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
+							try {
+								await client.db.setJSON(privateKey, "cookieclicker", { savecode: str });
+							} catch (error) {
+								console.log(error);
+							}
+						}
 						if (!Game.localStorageGet(Game.SaveTo))
 						{
 							if (Game.prefs.popups) Game.Popup('Error while saving.<br>Export your save instead!');
@@ -2231,6 +2240,13 @@ Game.Launch=function()
 				}
 			}
 		}
+		Game.toggleSkynet=function()
+		{
+			if (Game.skynetSecret) return Game.skynetSecret = undefined;
+			Game.Prompt('<h3>Set Skynet secret</h3><div class="block">This secret will be used to save and load your save on Skynet. Your secret may be as long and complicated as you wish but treat it as private as a password.</div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;"></textarea></div>',[['Set','if (l(\'textareaPrompt\').value.length>0) {Game.skynetSecret =l(\'textareaPrompt\').value;Game.ClosePrompt();}'],'Nevermind']);//prompt('Please paste in the text that was given to you on save export.','');
+			l('textareaPrompt').focus();
+			localStorage.setItem(skynetSecret, Game.skynetSecret);
+		}
 		
 		/*=====================================================================================
 		LOAD
@@ -2242,8 +2258,18 @@ Game.Launch=function()
 			console.log('This is your save data. Copypaste it (without quotation marks) into another version using the "Import save" feature.');
 			console.log(Game.localStorageGet(Game.SaveTo));
 		}
-		Game.LoadSave=function(data)
+		Game.LoadSave=async function(data)
 		{
+			if (Game.skynetSecret) {
+				const client = new Skynet.SkynetClient();
+				const { publicKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
+				try {
+					const resp = await client.db.getJSON(publicKey, "cookieclicker");
+					if (resp.data && resp.data.savecode) data = resp.data.savecode;
+				} catch (error) {
+					console.log(error);
+				}
+			}
 			var str='';
 			if (data) str=unescape(data);
 			else
@@ -5805,7 +5831,7 @@ Game.Launch=function()
 				'<div class="listing"><a class="option" '+Game.clickStr+'="Game.toSave=true;PlaySound(\'snd/tick.mp3\');">Save</a><label>Save manually (the game autosaves every 60 seconds; shortcut : ctrl+S)</label></div>'+
 				'<div class="listing"><a class="option" '+Game.clickStr+'="Game.ExportSave();PlaySound(\'snd/tick.mp3\');">Export save</a><a class="option" '+Game.clickStr+'="Game.ImportSave();PlaySound(\'snd/tick.mp3\');">Import save</a><label>You can use this to backup your save or to transfer it to another computer (shortcut for import : ctrl+O)</label></div>'+
 				'<div class="listing"><a class="option" '+Game.clickStr+'="Game.FileSave();PlaySound(\'snd/tick.mp3\');">Save to file</a><a class="option" style="position:relative;"><input id="FileLoadInput" type="file" style="cursor:pointer;opacity:0;position:absolute;left:0px;top:0px;width:100%;height:100%;" onchange="Game.FileLoad(event);" '+Game.clickStr+'="PlaySound(\'snd/tick.mp3\');"/>Load from file</a><label>Use this to keep backups on your computer</label></div>'+
-				'<div class="listing"><a class="option" '+Game.clickStr+'="Game.FileSave();PlaySound(\'snd/tick.mp3\');">Save to Skynet</a><a class="option" style="position:relative;"><input id="FileLoadInput" type="file" style="cursor:pointer;opacity:0;position:absolute;left:0px;top:0px;width:100%;height:100%;" onchange="Game.FileLoad(event);" '+Game.clickStr+'="PlaySound(\'snd/tick.mp3\');"/>Load from skynet</a><label>Use this to keep backups on the decentralized web powered by Skynet</label></div>'+
+				`<div class="listing"><a class="option" ${Game.clickStr}="Game.toggleSkynet();PlaySound(\'snd/tick.mp3\');">${Game.skynetSecret ? "Disable Skynet" : "Enable Skynet"}</a><label>Enable/disable Skynet sync</label></div>`+
 				
 				'<div class="listing"><a class="option warning" '+Game.clickStr+'="Game.HardReset();PlaySound(\'snd/tick.mp3\');">Wipe save</a><label>Delete all your progress, including your achievements</label></div>'+
 				'<div class="title">Settings</div>'+
