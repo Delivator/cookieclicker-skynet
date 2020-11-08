@@ -2246,7 +2246,19 @@ Game.Launch=function()
 			if (!secret) return;
 			Game.skynetSecret = secret;
 			localStorage.setItem("skynetSecret", Game.skynetSecret);
-			Game.toSave=true;
+
+			const client = new Skynet.SkynetClient();
+			const { publicKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
+			try {
+				const resp = await client.db.getJSON(publicKey, "cookieclicker");
+				if (resp.data && resp.data.savecode) {
+					data = Game.LoadSave(resp.data.savecode);
+				} else {
+					Game.toSave=true;
+				}
+			} catch (error) {
+				console.log(error);
+			}
 		}
 		Game.toggleSkynet=function()
 		{
