@@ -2257,6 +2257,8 @@ Game.Launch=function()
 				const resp = await client.db.getJSON(publicKey, "cookieclicker");
 				if (resp.data && resp.data.savecode) {
 					data = Game.LoadSave(resp.data.savecode);
+					if (Game.prefs.popups) Game.Popup('Saved to skynet');
+					else Game.Notify('Saved to skynet','','',1,1);
 				} else {
 					Game.toSave=true;
 				}
@@ -2297,7 +2299,11 @@ Game.Launch=function()
 					const { publicKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
 					try {
 						const resp = await client.db.getJSON(publicKey, "cookieclicker");
-						if (resp.data && resp.data.savecode) str = unescape(resp.data.savecode);
+						if (resp.data && resp.data.savecode) {
+							str = unescape(resp.data.savecode);
+							if (Game.prefs.popups) Game.Popup('Loaded from skynet');
+							else Game.Notify('Loaded from skynet','','',1,1);
+						}
 					} catch (error) {
 						console.log(error);
 					}
