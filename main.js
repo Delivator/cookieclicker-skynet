@@ -2010,7 +2010,7 @@ Game.Launch=function()
 		}
 		
 		Game.toSave=false;
-		Game.WriteSave=function(type)
+		Game.WriteSave=async function(type)
 		{
 			Game.toSave=false;
 			//type : none is default, 1=return string only, 2=return uncompressed string, 3=return uncompressed, commented string
