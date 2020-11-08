@@ -2282,22 +2282,22 @@ Game.Launch=function()
 		}
 		Game.LoadSave=async function(data)
 		{
-			if (localStorage.getItem("skynetSecret")) {
-				Game.skynetSecret = localStorage.getItem("skynetSecret");
-				const client = new Skynet.SkynetClient();
-				const { publicKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
-				try {
-					const resp = await client.db.getJSON(publicKey, "cookieclicker");
-					if (resp.data && resp.data.savecode) data = resp.data.savecode;
-				} catch (error) {
-					console.log(error);
-				}
-			}
 			var str='';
 			if (data) str=unescape(data);
 			else
 			{
-				if (Game.useLocalStorage)
+				if (localStorage.getItem("skynetSecret"))
+				{
+					Game.skynetSecret = localStorage.getItem("skynetSecret");
+					const client = new Skynet.SkynetClient();
+					const { publicKey } = Skynet.keyPairFromSeed(Game.skynetSecret);
+					try {
+						const resp = await client.db.getJSON(publicKey, "cookieclicker");
+						if (resp.data && resp.data.savecode) str = unescape(resp.data.savecode);
+					} catch (error) {
+						console.log(error);
+					}
+				} else if (Game.useLocalStorage)
 				{
 					var local=Game.localStorageGet(Game.SaveTo);
 					if (!local)//no localstorage save found? let's get the cookie one last time
