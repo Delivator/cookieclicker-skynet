@@ -2243,7 +2243,7 @@ Game.Launch=function()
 		Game.toggleSkynet=function()
 		{
 			if (Game.skynetSecret) return Game.skynetSecret = undefined;
-			Game.Prompt('<h3>Set Skynet secret</h3><div class="block">This secret will be used to save and load your save on Skynet. Your secret may be as long and complicated as you wish but treat it as private as a password.</div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;"></textarea></div>',[['Set','if (l(\'textareaPrompt\').value.length>0) {Game.skynetSecret =l(\'textareaPrompt\').value;localStorage.setItem(skynetSecret, Game.skynetSecret);Game.ClosePrompt();}'],'Nevermind']);//prompt('Please paste in the text that was given to you on save export.','');
+			Game.Prompt('<h3>Set Skynet secret</h3><div class="block">This secret will be used to save and load your save on Skynet. Your secret may be as long and complicated as you wish but treat it as private as a password.</div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;"></textarea></div>',[['Set','if (l(\'textareaPrompt\').value.length>0) {Game.skynetSecret=l(\'textareaPrompt\').value;localStorage.setItem(skynetSecret, l(\'textareaPrompt\').value);Game.ClosePrompt();}'],'Nevermind']);//prompt('Please paste in the text that was given to you on save export.','');
 			l('textareaPrompt').focus();
 		}
 		
